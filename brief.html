@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppliedAI — CEO Brief</title>
+<style>
+  :root{--bg:#f7f6f2;--bg2:#efede7;--bg3:#fff;--text:#1a1916;--text2:#6b6860;--text3:#a09e98;--border:rgba(26,25,22,0.1);--border2:rgba(26,25,22,0.18);--red:#c0392b;--red-l:#fdf0ef;--red-m:#f5c5c1;--red-d:#8b1a12;--amber:#b45309;--amber-l:#fdf8ee;--amber-m:#fcd89a;--amber-d:#7c3a05;--green:#166534;--green-l:#f0faf3;--green-m:#a7d9b8;--green-d:#0d4a25;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;min-height:100vh;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:56px;background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap;}
+  .logo{font-family:Georgia,serif;font-size:18px;} .logo em{color:var(--text3);font-style:italic;}
+  .nav-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .nav-date{font-family:'Courier New',monospace;font-size:11px;color:var(--text3);letter-spacing:.05em;}
+  .nbtn{font-family:'Courier New',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:6px 12px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;color:var(--text2);transition:all .15s;white-space:nowrap;}
+  .nbtn:hover{background:var(--bg2);}
+  .nbtn.active{background:var(--text);color:var(--bg3);border-color:var(--text);}
+  .nbtn.send{background:var(--green);color:#fff;border-color:var(--green);}
+  .nbtn.send:hover{opacity:.88;}
+  .nbtn.send:disabled{opacity:.5;cursor:not-allowed;}
+
+  .page{padding:2rem;max-width:860px;margin:0 auto;}
+  .eyebrow{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+  h1{font-family:Georgia,serif;font-size:28px;letter-spacing:-.02em;line-height:1.2;margin-bottom:1.5rem;}
+  h1 em{font-style:italic;color:var(--text2);}
+
+  .summary-bar{display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;}
+  .chip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid transparent;}
+  .chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .chip-red{background:var(--red-l);border-color:var(--red-m);color:var(--red-d);} .chip-red .chip-dot{background:var(--red);}
+  .chip-amber{background:var(--amber-l);border-color:var(--amber-m);color:var(--amber-d);} .chip-amber .chip-dot{background:var(--amber);}
+  .chip-green{background:var(--green-l);border-color:var(--green-m);color:var(--green-d);} .chip-green .chip-dot{background:var(--green);}
+
+  .section-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:2rem;}
+  .section-lbl{font-family:'Courier New',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);white-space:nowrap;}
+  .section-rule{flex:1;height:1px;background:var(--border);}
+
+  .card{border-radius:12px;overflow:hidden;border:1px solid transparent;margin-bottom:10px;position:relative;transition:transform .12s,box-shadow .12s;}
+  .card:not(body.edit-mode .card):hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06);}
+  .card-red{background:var(--red-l);border-color:var(--red-m);}
+  .card-amber{background:var(--amber-l);border-color:var(--amber-m);}
+  .card-green{background:var(--green-l);border-color:var(--green-m);}
+
+  .card-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;user-select:none;}
+  body.edit-mode .card-hdr{cursor:default;}
+  .tag{font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;flex-shrink:0;color:#fff;}
+  .card-red .tag{background:var(--red);} .card-amber .tag{background:var(--amber);} .card-green .tag{background:var(--green);}
+  .card-title{font-size:14px;font-weight:500;flex:1;}
+  .card-red .card-title{color:var(--red-d);} .card-amber .card-title{color:var(--amber-d);} .card-green .card-title{color:var(--green-d);}
+  .card-meta{font-family:'Courier New',monospace;font-size:10px;opacity:.6;flex-shrink:0;}
+  .card-red .card-meta{color:var(--red-d);} .card-amber .card-meta{color:var(--amber-d);} .card-green .card-meta{color:var(--green-d);}
+  .chev{font-size:10px;opacity:.5;transition:transform .2s;flex-shrink:0;}
+  .card.open .chev{transform:rotate(180deg);}
+
+  .card-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:13.5px;line-height:1.7;}
+  .card.open .card-body{max-height:600px;padding:0 16px 16px;}
+  .card-red .card-body{color:var(--red-d);} .card-amber .card-body{color:var(--amber-d);} .card-green .card-body{color:var(--green-d);}
+  .flbl{font-family:'Courier New',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;opacity:.55;margin-bottom:3px;}
+  .fval{font-size:13.5px;line-height:1.65;margin-bottom:10px;}
+
+  /* EDIT MODE */
+  .edit-ctrl{display:none;position:absolute;top:8px;right:8px;gap:4px;z-index:10;}
+  body.edit-mode .edit-ctrl{display:flex;}
+  body.edit-mode .card:hover{transform:none;box-shadow:none;}
+  .ebtn{font-family:'Courier New',monospace;font-size:9px;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;color:var(--text2);transition:all .12s;}
+  .ebtn:hover{background:var(--bg2);}
+  .ebtn.del{color:var(--red);border-color:var(--red-m);}
+  .ebtn.del:hover{background:var(--red-l);}
+  body.edit-mode [contenteditable]{outline:none;border-bottom:1.5px dashed var(--border2);padding-bottom:1px;cursor:text;min-width:20px;display:inline-block;}
+  body.edit-mode [contenteditable]:focus{border-bottom-color:var(--text2);}
+
+  .add-btn{display:none;width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--border2);background:none;font-family:'Courier New',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);cursor:pointer;transition:all .15s;margin-bottom:10px;}
+  .add-btn:hover{background:var(--bg2);color:var(--text2);}
+  body.edit-mode .add-btn{display:block;}
+
+  .empty{text-align:center;padding:1.5rem;font-size:13px;color:var(--text3);font-style:italic;border:1px dashed var(--border2);border-radius:10px;margin-bottom:10px;}
+
+  /* MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(26,25,22,.4);z-index:200;align-items:center;justify-content:center;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--bg3);border-radius:16px;padding:24px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;}
+  .modal h3{font-family:Georgia,serif;font-size:20px;margin-bottom:16px;}
+  .mfield{margin-bottom:12px;}
+  .mfield label{display:block;font-family:'Courier New',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:4px;}
+  .mfield input,.mfield textarea{width:100%;padding:8px 11px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .mfield input:focus,.mfield textarea:focus{border-color:var(--text2);}
+  .mfield textarea{min-height:70px;resize:vertical;}
+  .mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mactions{display:flex;gap:8px;margin-top:16px;}
+  .mbtn{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border2);font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .mbtn.primary{background:var(--text);color:var(--bg3);border-color:var(--text);}
+  .mbtn.primary:hover{opacity:.85;}
+  .mbtn.secondary{background:none;color:var(--text2);}
+  .mbtn.secondary:hover{background:var(--bg2);}
+
+  .edit-hint{display:none;font-family:'Courier New',monospace;font-size:10px;color:var(--text3);text-align:center;padding:8px;letter-spacing:.04em;margin-bottom:8px;}
+  body.edit-mode .edit-hint{display:block;}
+
+  /* SEND STATUS */
+  .send-status{background:var(--green-l);border:1px solid var(--green-m);border-radius:10px;padding:14px 18px;margin-bottom:1.5rem;font-size:13px;color:var(--green-d);display:none;line-height:1.6;}
+  .send-status.show{display:block;}
+  .send-status strong{display:block;margin-bottom:2px;}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg3);padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .3s ease;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  @media(max-width:600px){nav{height:auto;padding:10px 1rem;}.page{padding:1.25rem 1rem;}.mrow{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Applied<em>AI</em> · <span style="font-size:14px;font-style:italic;color:var(--text3)">CEO Brief</span></div>
+  <div class="nav-btns">
+    <div class="nav-date" id="nav-date"></div>
+    <button class="nbtn" id="edit-btn" onclick="toggleEdit()">✏ Edit brief</button>
+    <button class="nbtn send" id="send-btn" onclick="sendBrief()">✉ Send to my inbox</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="send-status" id="send-status">
+    <strong>Brief sent to your inbox ✓</strong>
+    Review it, then forward to Arya when ready.
+  </div>
+
+  <div class="eyebrow">Daily · CEO</div>
+  <h1>Good morning, Arya.<br><em>Here's what needs you today.</em></h1>
+
+  <div class="summary-bar">
+    <div class="chip chip-red"><div class="chip-dot"></div><span contenteditable="false" id="cnt-red">0</span>&nbsp;need action now</div>
+    <div class="chip chip-amber"><div class="chip-dot"></div><span contenteditable="false" id="cnt-amber">0</span>&nbsp;on your radar</div>
+    <div class="chip chip-green"><div class="chip-dot"></div><span contenteditable="false" id="cnt-green">0</span>&nbsp;moving well</div>
+  </div>
+
+  <div class="edit-hint">Click any text to edit · + to add cards · × to remove</div>
+
+  <div class="section-row"><div class="section-lbl">🔴 Act today</div><div class="section-rule"></div></div>
+  <div id="sec-red"><div class="empty" id="empty-red">No red items today</div></div>
+  <button class="add-btn" onclick="openModal('red')">+ Add red card</button>
+
+  <div class="section-row"><div class="section-lbl">🟡 On your radar</div><div class="section-rule"></div></div>
+  <div id="sec-amber"><div class="empty" id="empty-amber">No amber items today</div></div>
+  <button class="add-btn" onclick="openModal('amber')">+ Add amber card</button>
+
+  <div class="section-row"><div class="section-lbl">🟢 Moving well</div><div class="section-rule"></div></div>
+  <div id="sec-green"><div class="empty" id="empty-green">No green items today</div></div>
+  <button class="add-btn" onclick="openModal('green')">+ Add green card</button>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Add card</h3>
+    <input type="hidden" id="mc">
+    <div class="mrow">
+      <div class="mfield"><label>Tag / type</label><input type="text" id="m-tag" placeholder="e.g. Decision, Issue, FYI"></div>
+      <div class="mfield"><label>From · team</label><input type="text" id="m-meta" placeholder="e.g. Marcus · Finance"></div>
+    </div>
+    <div class="mfield"><label>Title — one line *</label><input type="text" id="m-title" placeholder="What's the headline?"></div>
+    <div class="mfield"><label>Context</label><textarea id="m-context" placeholder="What's happening / why does it matter?"></textarea></div>
+    <div class="mfield"><label>Recommendation</label><textarea id="m-rec" placeholder="What do you suggest? (optional)"></textarea></div>
+    <div class="mfield"><label>What Arya needs to do</label><input type="text" id="m-action" placeholder="e.g. Reply to Marcus by 2pm (optional)"></div>
+    <div class="mactions">
+      <button class="mbtn secondary" onclick="closeModal()">Cancel</button>
+      <button class="mbtn primary" onclick="addCard()">Add card</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ENDPOINT = 'https://formspree.io/f/xnjobyjz';
+let editMode = false;
+const defLabels = {red:'Decision',amber:'FYI',green:'Progress'};
+
+// ── Edit mode ──────────────────────────────────────────────────
+function toggleEdit(){
+  editMode=!editMode;
+  document.body.classList.toggle('edit-mode',editMode);
+  const btn=document.getElementById('edit-btn');
+  btn.classList.toggle('active',editMode);
+  btn.textContent=editMode?'✓ Done editing':'✏ Edit brief';
+  document.querySelectorAll('[contenteditable]').forEach(el=>el.setAttribute('contenteditable',editMode?'true':'false'));
+  if(!editMode){updateCounts();showToast('Brief saved');}
+}
+
+// ── Counts ─────────────────────────────────────────────────────
+function updateCounts(){
+  ['red','amber','green'].forEach(c=>{
+    const cards=document.getElementById('sec-'+c).querySelectorAll('.card');
+    document.getElementById('cnt-'+c).textContent=cards.length;
+    const e=document.getElementById('empty-'+c);
+    if(e) e.style.display=cards.length>0?'none':'block';
+  });
+}
+
+// ── Toggle card ────────────────────────────────────────────────
+function toggleCard(el){if(editMode)return;el.closest('.card').classList.toggle('open');}
+
+// ── Delete card ────────────────────────────────────────────────
+function delCard(btn){if(!confirm('Remove this card?'))return;btn.closest('.card').remove();updateCounts();}
+
+// ── Modal ──────────────────────────────────────────────────────
+function openModal(colour){
+  document.getElementById('mc').value=colour;
+  document.getElementById('modal-title').textContent='Add '+colour+' card';
+  ['tag','meta','title','context','rec','action'].forEach(id=>document.getElementById('m-'+id).value='');
+  document.getElementById('m-tag').value=defLabels[colour]||'';
+  document.getElementById('modal-bg').classList.add('show');
+  setTimeout(()=>document.getElementById('m-title').focus(),100);
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('show');}
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ── Add card ───────────────────────────────────────────────────
+function addCard(){
+  const colour=document.getElementById('mc').value;
+  const tag=document.getElementById('m-tag').value.trim()||'Note';
+  const meta=document.getElementById('m-meta').value.trim();
+  const title=document.getElementById('m-title').value.trim();
+  const context=document.getElementById('m-context').value.trim();
+  const rec=document.getElementById('m-rec').value.trim();
+  const action=document.getElementById('m-action').value.trim();
+  if(!title){document.getElementById('m-title').focus();return;}
+
+  const empty=document.getElementById('empty-'+colour);
+  if(empty)empty.style.display='none';
+
+  const card=document.createElement('div');
+  card.className='card card-'+colour+' open';
+  card.innerHTML=`
+    <div class="edit-ctrl"><button class="ebtn del" onclick="delCard(this)">× Remove</button></div>
+    <div class="card-hdr" onclick="toggleCard(this)">
+      <span class="tag" contenteditable="false">${tag}</span>
+      <span class="card-title" contenteditable="false">${title}</span>
+      ${meta?`<span class="card-meta" contenteditable="false">${meta}</span>`:''}
+      <span class="chev">▼</span>
+    </div>
+    <div class="card-body">
+      ${context?`<div class="flbl">Context</div><div class="fval" contenteditable="false">${context}</div>`:''}
+      ${rec?`<div class="flbl">Recommendation</div><div class="fval" contenteditable="false">${rec}</div>`:''}
+      ${action?`<div class="flbl">What you need to do</div><div class="fval" contenteditable="false">${action}</div>`:''}
+    </div>`;
+
+  document.getElementById('sec-'+colour).appendChild(card);
+  if(editMode)card.querySelectorAll('[contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+  closeModal();updateCounts();showToast('Card added');
+}
+
+// ── Build plain-text brief ─────────────────────────────────────
+function buildBriefText(){
+  const now=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const lines=[`CEO DAILY BRIEF — ${now}`,`Prepared by EA · AppliedAI`,``,`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`];
+  [{id:'red',emoji:'🔴',label:'ACT TODAY — needs your input or decision now'},
+   {id:'amber',emoji:'🟡',label:'ON YOUR RADAR — review this week'},
+   {id:'green',emoji:'🟢',label:'MOVING WELL — no action needed'}
+  ].forEach(({id,emoji,label})=>{
+    const cards=document.getElementById('sec-'+id).querySelectorAll('.card');
+    lines.push(``,`${emoji} ${label}`,`─────────────────────────────────────`);
+    if(cards.length===0){lines.push(`Nothing in this section today.`);}
+    else{
+      cards.forEach((card,i)=>{
+        const tag=card.querySelector('.tag')?.textContent?.trim()||'';
+        const title=card.querySelector('.card-title')?.textContent?.trim()||'';
+        const meta=card.querySelector('.card-meta')?.textContent?.trim()||'';
+        lines.push(``,`${i+1}. [${tag}] ${title}${meta?' · '+meta:''}`);
+        card.querySelectorAll('.fval').forEach((v,j)=>{
+          const lbl=card.querySelectorAll('.flbl')[j]?.textContent?.trim()||'';
+          const val=v.textContent?.trim()||'';
+          if(val)lines.push(`   ${lbl}: ${val}`);
+        });
+      });
+    }
+  });
+  lines.push(``,`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,`Sent by EA · AppliedAI CEO's Office`);
+  return lines.join('\n');
+}
+
+// ── Send brief to EA inbox via Formspree ───────────────────────
+async function sendBrief(){
+  if(editMode)toggleEdit();
+  const total=['red','amber','green'].reduce((n,c)=>n+document.getElementById('sec-'+c).querySelectorAll('.card').length,0);
+  if(total===0){alert('The brief is empty — add at least one card before sending.');return;}
+
+  const btn=document.getElementById('send-btn');
+  btn.disabled=true;btn.textContent='Sending…';
+
+  const now=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  const redCount=document.getElementById('sec-red').querySelectorAll('.card').length;
+  const amberCount=document.getElementById('sec-amber').querySelectorAll('.card').length;
+  const greenCount=document.getElementById('sec-green').querySelectorAll('.card').length;
+
+  const payload={
+    _subject:`CEO Brief — ${now} | 🔴${redCount} 🟡${amberCount} 🟢${greenCount}`,
+    type:'CEO DAILY BRIEF',
+    date:now,
+    summary:`🔴 ${redCount} act today · 🟡 ${amberCount} on radar · 🟢 ${greenCount} moving well`,
+    brief:buildBriefText()
+  };
+
+  try{
+    const res=await fetch(ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(res.ok){
+      btn.disabled=false;btn.textContent='✉ Send to my inbox';
+      document.getElementById('send-status').classList.add('show');
+      showToast('Brief sent to your inbox ✓');
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      btn.disabled=false;btn.textContent='✉ Send to my inbox';
+      alert('Something went wrong. Please try again.');
+    }
+  } catch(e){
+    btn.disabled=false;btn.textContent='✉ Send to my inbox';
+    alert('Could not connect. Are you online?');
+  }
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+document.getElementById('nav-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long'}).toUpperCase();
+updateCounts();
+</script>
+</body>
+</html>
