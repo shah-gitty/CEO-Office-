@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppliedAI — CEO's Office</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f2; --bg2: #efede7; --bg3: #ffffff;
+    --text: #1a1916; --text2: #6b6860; --text3: #a09e98;
+    --border: rgba(26,25,22,0.1); --border2: rgba(26,25,22,0.18);
+    --red: #c0392b; --amber: #b45309; --green: #166534;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Instrument Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; height: 60px; background: var(--bg3); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--text3); font-style: italic; }
+  .nav-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2rem; }
+
+  .hero { text-align: center; margin-bottom: 3rem; }
+  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+  .hero-title { font-family: 'DM Serif Display', serif; font-size: 40px; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+  .hero-title em { font-style: italic; color: var(--text2); }
+  .hero-sub { font-size: 15px; color: var(--text2); max-width: 420px; margin: 0 auto; line-height: 1.65; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 680px; width: 100%; }
+
+  .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 28px 28px 24px; text-decoration: none; color: var(--text); transition: all 0.18s; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .card-team::before { background: linear-gradient(90deg, var(--red), var(--amber), var(--green)); }
+  .card-brief::before { background: var(--text); }
+  .card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,25,22,0.08); }
+  .card:active { transform: translateY(0); }
+
+  .card-icon { font-size: 28px; line-height: 1; }
+  .card-label { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 2px; }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 22px; letter-spacing: -0.02em; line-height: 1.2; }
+  .card-desc { font-size: 13px; color: var(--text2); line-height: 1.6; flex: 1; }
+  .card-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .chip { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 20px; border: 1px solid var(--border2); color: var(--text3); }
+  .chip-red { border-color: #f5c5c1; color: var(--red); background: #fdf0ef; }
+  .chip-amber { border-color: #fcd89a; color: var(--amber); background: #fdf8ee; }
+  .chip-green { border-color: #a7d9b8; color: var(--green); background: #f0faf3; }
+  .chip-dark { border-color: var(--border2); color: var(--text2); background: var(--bg2); }
+
+  .card-arrow { font-size: 18px; color: var(--text3); align-self: flex-end; transition: transform 0.15s; }
+  .card:hover .card-arrow { transform: translateX(3px); }
+
+  .how-it-works { max-width: 680px; width: 100%; margin-top: 2.5rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .how-title { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 14px; }
+  .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .how-step { display: flex; flex-direction: column; gap: 5px; }
+  .step-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+  .step-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .step-text strong { color: var(--text); font-weight: 600; }
+
+  footer { padding: 1.5rem 2rem; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.05em; border-top: 1px solid var(--border); }
+
+  @media (max-width: 580px) {
+    .cards { grid-template-columns: 1fr; }
+    .hero-title { font-size: 30px; }
+    .how-steps { grid-template-columns: 1fr; }
+    nav { padding: 0 1.25rem; }
+    main { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Applied<span>AI</span></div>
+  <div class="nav-tag">CEO's Office</div>
+</nav>
+
+<main>
+  <div class="hero">
+    <div class="hero-eyebrow">AppliedAI · Internal</div>
+    <div class="hero-title">The CEO's Office.<br><em>Organised.</em></div>
+    <div class="hero-sub">One place for the team to submit requests, and for the EA to brief Arya — clearly, fast, without noise.</div>
+  </div>
+
+  <div class="cards">
+    <!-- TEAM CARD -->
+    <a class="card card-team" href="team_submit.html">
+      <div class="card-icon">📥</div>
+      <div>
+        <div class="card-label">Leadership team</div>
+        <div class="card-title">Submit a request</div>
+      </div>
+      <div class="card-desc">Issue, Ask, Recommendation, FYI, Blocker, or Decision. Fill in the form and send straight to the EA via email or WhatsApp.</div>
+      <div class="card-chips">
+        <span class="chip chip-red">Issue</span>
+        <span class="chip chip-amber">Ask</span>
+        <span class="chip chip-green">Recommendation</span>
+        <span class="chip chip-dark">+ 3 more</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <!-- CEO BRIEF CARD -->
+    <a class="card card-brief" href="ceo_brief.html">
+      <div class="card-icon">📋</div>
+      <div>
+        <div class="card-label">EA only</div>
+        <div class="card-title">CEO Daily Brief</div>
+      </div>
+      <div class="card-desc">Build and edit Arya's daily brief. Red, amber, green. Add cards, edit inline, share when ready. Kept separate from team submissions.</div>
+      <div class="card-chips">
+        <span class="chip chip-red">Act today</span>
+        <span class="chip chip-amber">On radar</span>
+        <span class="chip chip-green">Moving well</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="how-it-works">
+    <div class="how-title">How it works</div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <div class="step-text"><strong>Team submits</strong> a structured request via the form — Issue, Ask, Recommendation, FYI, Blocker, or Decision.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <div class="step-text"><strong>EA receives</strong> it by email or WhatsApp, reviews it, and decides what reaches Arya and when.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <div class="step-text"><strong>Arya gets</strong> a clean daily brief — red, amber, green — with only what he needs to act on. No noise.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>AppliedAI · CEO's Office · Internal use only</footer>
+
+</body>
+</html>
