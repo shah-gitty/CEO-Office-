@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppliedAI — Submit a Request</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f6f2;--bg2:#efede7;--bg3:#ffffff;
+    --text:#1a1916;--text2:#6b6860;--text3:#a09e98;
+    --border:rgba(26,25,22,0.1);--border2:rgba(26,25,22,0.18);
+    --red:#c0392b;--red-light:#fdf0ef;--red-mid:#f5c5c1;--red-dark:#8b1a12;
+    --amber:#b45309;--amber-light:#fdf8ee;--amber-mid:#fcd89a;--amber-dark:#7c3a05;
+    --green:#166534;--green-light:#f0faf3;--green-mid:#a7d9b8;--green-dark:#0d4a25;
+    --blue:#1e40af;--blue-light:#eff4ff;--blue-mid:#bfcfff;--blue-dark:#1a2e80;
+    --orange:#c2410c;--orange-light:#fff5f0;--orange-mid:#fdc8a8;--orange-dark:#8a2a06;
+    --purple:#5b21b6;--purple-light:#f4f0ff;--purple-mid:#c9b8f5;--purple-dark:#3b0f8c;
+    --wa:#25D366;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;min-height:100vh;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:56px;background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:18px;letter-spacing:-0.02em;}
+  .nav-logo span{color:var(--text3);font-style:italic;}
+  .nav-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;}
+
+  .page{padding:2rem;max-width:700px;margin:0 auto;}
+  .page-header{margin-bottom:2rem;}
+  .page-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+  .page-title{font-family:'DM Serif Display',serif;font-size:30px;letter-spacing:-0.03em;line-height:1.2;}
+  .page-title em{font-style:italic;color:var(--text2);}
+
+
+
+  .intro{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:1.5rem;font-size:13.5px;line-height:1.7;color:var(--text2);}
+  .intro strong{color:var(--text);}
+
+  /* TYPE SELECTOR */
+  .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.5rem;}
+  .type-btn{padding:14px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);cursor:pointer;transition:all 0.15s;text-align:center;}
+  .type-btn:hover{border-color:var(--border2);transform:translateY(-1px);}
+  .type-icon{font-size:18px;display:block;margin-bottom:4px;line-height:1;}
+  .type-name{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;font-weight:500;display:block;margin-bottom:2px;}
+  .type-desc{font-size:11px;color:var(--text3);line-height:1.4;}
+  .type-btn.sel-issue{background:var(--red-light);border-color:var(--red);} .type-btn.sel-issue .type-name{color:var(--red-dark);}
+  .type-btn.sel-ask{background:var(--amber-light);border-color:var(--amber);} .type-btn.sel-ask .type-name{color:var(--amber-dark);}
+  .type-btn.sel-recommendation{background:var(--green-light);border-color:var(--green);} .type-btn.sel-recommendation .type-name{color:var(--green-dark);}
+  .type-btn.sel-fyi{background:var(--blue-light);border-color:var(--blue);} .type-btn.sel-fyi .type-name{color:var(--blue-dark);}
+  .type-btn.sel-blocker{background:var(--orange-light);border-color:var(--orange);} .type-btn.sel-blocker .type-name{color:var(--orange-dark);}
+  .type-btn.sel-decision{background:var(--purple-light);border-color:var(--purple);} .type-btn.sel-decision .type-name{color:var(--purple-dark);}
+
+  /* FORM AREAS */
+  .form-area{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:22px;display:none;animation:rise 0.2s ease;}
+  .form-area.show{display:block;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .form-area.theme-issue{border-color:var(--red-mid);background:var(--red-light);}
+  .form-area.theme-ask{border-color:var(--amber-mid);background:var(--amber-light);}
+  .form-area.theme-recommendation{border-color:var(--green-mid);background:var(--green-light);}
+  .form-area.theme-fyi{border-color:var(--blue-mid);background:var(--blue-light);}
+  .form-area.theme-blocker{border-color:var(--orange-mid);background:var(--orange-light);}
+  .form-area.theme-decision{border-color:var(--purple-mid);background:var(--purple-light);}
+
+  .form-heading{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .form-sub{font-size:12px;color:var(--text2);margin-bottom:18px;font-style:italic;}
+  .badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;padding:3px 8px;border-radius:20px;color:white;flex-shrink:0;}
+  .badge-issue{background:var(--red);} .badge-ask{background:var(--amber);}
+  .badge-recommendation{background:var(--green);} .badge-fyi{background:var(--blue);}
+  .badge-blocker{background:var(--orange);} .badge-decision{background:var(--purple);}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:5px;}
+  .field input,.field textarea,.field select{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);font-family:'Instrument Sans',sans-serif;font-size:13.5px;color:var(--text);outline:none;transition:border-color 0.15s,box-shadow 0.15s;resize:vertical;}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--text2);box-shadow:0 0 0 3px rgba(26,25,22,0.06);}
+  .field textarea{min-height:80px;}
+  .field-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .field input.err{border-color:var(--red)!important;}
+  .field-err{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+  .field-err.show{display:block;}
+
+  /* SUBMIT BUTTON */
+  .send-bar{margin-top:20px;}
+  .send-btn{width:100%;padding:13px 10px;border-radius:9px;border:none;font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;color:white;display:flex;align-items:center;justify-content:center;gap:8px;line-height:1;}
+  .send-btn:hover{opacity:0.88;transform:translateY(-1px);}
+  .send-btn:active{transform:scale(0.99);}
+  .send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+  .btn-issue{background:var(--red);} .btn-ask{background:var(--amber);}
+  .btn-recommendation{background:var(--green);} .btn-fyi{background:var(--blue);}
+  .btn-blocker{background:var(--orange);} .btn-decision{background:var(--purple);}
+  .send-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.5;}
+
+  /* SUCCESS */
+  .success-screen{display:none;text-align:center;padding:3rem 1rem;animation:rise 0.3s ease;}
+  .success-screen.show{display:block;}
+  .success-icon{font-size:48px;margin-bottom:1rem;display:block;}
+  .success-title{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px;}
+  .success-sub{font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.6;}
+  .success-again{font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;padding:8px 18px;border-radius:7px;border:1px solid var(--border2);background:none;cursor:pointer;color:var(--text2);transition:all 0.15s;}
+  .success-again:hover{background:var(--bg2);}
+
+  @media(max-width:600px){
+    nav{padding:0 1rem;}
+    .page{padding:1.25rem 1rem;}
+    .type-grid{grid-template-columns:repeat(2,1fr);}
+    .field-2{grid-template-columns:1fr;}
+    .send-bar{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Applied<span>AI</span></div>
+  <div class="nav-sub">Submit to CEO's office</div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Leadership team</div>
+    <div class="page-title">Submit a request<br><em>to Arya's office.</em></div>
+  </div>
+
+  <div class="intro">
+    <strong>One submission, one topic.</strong> Fill in the form below then hit Email or WhatsApp. Your message is pre-written — just hit send in your app. Everything goes to the EA first, not directly to Arya.
+  </div>
+
+  <div id="main-form">
+    <div class="type-grid">
+      <button class="type-btn" onclick="selectType('issue')"><span class="type-icon">🔴</span><span class="type-name">Issue</span><span class="type-desc">Something is broken or at risk</span></button>
+      <button class="type-btn" onclick="selectType('ask')"><span class="type-icon">🟡</span><span class="type-name">Ask</span><span class="type-desc">You need something from Arya</span></button>
+      <button class="type-btn" onclick="selectType('recommendation')"><span class="type-icon">🟢</span><span class="type-name">Recommendation</span><span class="type-desc">You have a proposal to make</span></button>
+      <button class="type-btn" onclick="selectType('fyi')"><span class="type-icon">🔵</span><span class="type-name">FYI</span><span class="type-desc">Heads up, no action needed</span></button>
+      <button class="type-btn" onclick="selectType('blocker')"><span class="type-icon">🟠</span><span class="type-name">Blocker</span><span class="type-desc">Work is stopped, need unblocking</span></button>
+      <button class="type-btn" onclick="selectType('decision')"><span class="type-icon">🟣</span><span class="type-name">Decision</span><span class="type-desc">CEO must decide something</span></button>
+    </div>
+
+    <!-- ISSUE -->
+    <div class="form-area theme-issue" id="form-issue">
+      <div class="form-heading"><span class="badge badge-issue">Issue</span>What's the problem?</div>
+      <div class="form-sub">Something is broken, failing, or at significant risk.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="i-name" placeholder="e.g. Zara Ahmed"></div>
+        <div class="field"><label>Team</label><input type="text" id="i-team" placeholder="e.g. Product"></div>
+      </div>
+      <div class="field">
+        <label>Issue — one sentence *</label>
+        <input type="text" id="i-title" placeholder="What is going wrong?">
+        <div class="field-err" id="i-title-err">Please describe the issue before sending.</div>
+      </div>
+      <div class="field"><label>Context &amp; impact</label><textarea id="i-context" placeholder="What's happening, since when, who or what is affected..."></textarea></div>
+      <div class="field"><label>What you've already tried</label><textarea id="i-tried" placeholder="Steps already taken..." style="min-height:60px"></textarea></div>
+      <div class="field-2">
+        <div class="field"><label>Urgency</label>
+          <select id="i-urgency"><option>Today — hours matter</option><option>This week</option><option>Before end of month</option><option>Low priority</option></select>
+        </div>
+        <div class="field"><label>What you need from Arya</label><input type="text" id="i-need" placeholder="e.g. Approval to pause rollout"></div>
+      </div>
+      <div class="send-bar">
+        <button class="send-btn btn-issue" onclick="send('issue')">🔴 Submit Issue</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+
+    <!-- ASK -->
+    <div class="form-area theme-ask" id="form-ask">
+      <div class="form-heading"><span class="badge badge-ask">Ask</span>What do you need?</div>
+      <div class="form-sub">You need a resource, approval, time, or input from Arya.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="a-name" placeholder="e.g. Dev Patel"></div>
+        <div class="field"><label>Team</label><input type="text" id="a-team" placeholder="e.g. Engineering"></div>
+      </div>
+      <div class="field">
+        <label>The ask — one sentence *</label>
+        <input type="text" id="a-title" placeholder="e.g. Approval to hire a 6-week contractor">
+        <div class="field-err" id="a-title-err">Please describe your ask before sending.</div>
+      </div>
+      <div class="field"><label>Why you need it</label><textarea id="a-why" placeholder="Business reason, what it unblocks, what happens if you don't get it..."></textarea></div>
+      <div class="field-2">
+        <div class="field"><label>Needed by</label><input type="date" id="a-date"></div>
+        <div class="field"><label>Cost / effort</label><input type="text" id="a-cost" placeholder="e.g. £8k or 2hrs of Arya's time"></div>
+      </div>
+      <div class="send-bar">
+        <button class="send-btn btn-ask" onclick="send('ask')">🟡 Submit Ask</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+
+    <!-- RECOMMENDATION -->
+    <div class="form-area theme-recommendation" id="form-recommendation">
+      <div class="form-heading"><span class="badge badge-recommendation">Recommendation</span>What's your proposal?</div>
+      <div class="form-sub">You've thought it through and have a clear proposal with reasoning.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="r-name" placeholder="e.g. Marcus Chen"></div>
+        <div class="field"><label>Team</label><input type="text" id="r-team" placeholder="e.g. Finance"></div>
+      </div>
+      <div class="field">
+        <label>Recommendation — one sentence *</label>
+        <input type="text" id="r-title" placeholder="e.g. Switch to annual billing to improve cash flow">
+        <div class="field-err" id="r-title-err">Please describe your recommendation before sending.</div>
+      </div>
+      <div class="field"><label>The case for it</label><textarea id="r-case" placeholder="What problem does this solve? What's the evidence?"></textarea></div>
+      <div class="field"><label>Alternatives considered</label><textarea id="r-alts" placeholder="1–2 alternatives you ruled out and why..." style="min-height:60px"></textarea></div>
+      <div class="field-2">
+        <div class="field"><label>Decision needed by</label><input type="date" id="r-date"></div>
+        <div class="field"><label>Who else is aligned</label><input type="text" id="r-aligned" placeholder="e.g. Zara, Dev — Priya TBC"></div>
+      </div>
+      <div class="send-bar">
+        <button class="send-btn btn-recommendation" onclick="send('recommendation')">🟢 Submit Recommendation</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+
+    <!-- FYI -->
+    <div class="form-area theme-fyi" id="form-fyi">
+      <div class="form-heading"><span class="badge badge-fyi">FYI</span>Heads up</div>
+      <div class="form-sub">Something the EA and Arya should know. No decision needed.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="f-name" placeholder="e.g. Lena Torres"></div>
+        <div class="field"><label>Team</label><input type="text" id="f-team" placeholder="e.g. Comms"></div>
+      </div>
+      <div class="field">
+        <label>Subject *</label>
+        <input type="text" id="f-title" placeholder="e.g. TechCrunch profile confirmed for next Wednesday">
+        <div class="field-err" id="f-title-err">Please add a subject before sending.</div>
+      </div>
+      <div class="field"><label>What Arya should know</label><textarea id="f-detail" placeholder="Keep it brief — why does he need to know this?"></textarea></div>
+      <div class="send-bar">
+        <button class="send-btn btn-fyi" onclick="send('fyi')">🔵 Submit FYI</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+
+    <!-- BLOCKER -->
+    <div class="form-area theme-blocker" id="form-blocker">
+      <div class="form-heading"><span class="badge badge-blocker">Blocker</span>What's stopping you?</div>
+      <div class="form-sub">Work is halted and you need Arya to intervene or unblock.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="b-name" placeholder="e.g. Zara Ahmed"></div>
+        <div class="field"><label>Team</label><input type="text" id="b-team" placeholder="e.g. Product"></div>
+      </div>
+      <div class="field">
+        <label>What's blocked *</label>
+        <input type="text" id="b-title" placeholder="e.g. Enterprise dashboard — waiting on legal sign-off">
+        <div class="field-err" id="b-title-err">Please describe what's blocked before sending.</div>
+      </div>
+      <div class="field"><label>Why it's blocked</label><textarea id="b-why" placeholder="Root cause, who or what is creating the block..."></textarea></div>
+      <div class="field"><label>To unblock, I need Arya to</label><input type="text" id="b-need" placeholder="e.g. Chase legal directly, or delegate sign-off to Marcus"></div>
+      <div class="field-2">
+        <div class="field"><label>Blocked since</label><input type="date" id="b-date"></div>
+        <div class="field"><label>Impact if not resolved</label><input type="text" id="b-impact" placeholder="e.g. Launch slips 2 weeks"></div>
+      </div>
+      <div class="send-bar">
+        <button class="send-btn btn-blocker" onclick="send('blocker')">🟠 Submit Blocker</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+
+    <!-- DECISION -->
+    <div class="form-area theme-decision" id="form-decision">
+      <div class="form-heading"><span class="badge badge-decision">Decision</span>CEO must decide</div>
+      <div class="form-sub">Only use this if it genuinely can't be decided without Arya.</div>
+      <div class="field-2">
+        <div class="field"><label>Your name</label><input type="text" id="d-name" placeholder="e.g. Marcus Chen"></div>
+        <div class="field"><label>Team</label><input type="text" id="d-team" placeholder="e.g. Finance"></div>
+      </div>
+      <div class="field">
+        <label>The decision *</label>
+        <input type="text" id="d-title" placeholder="e.g. Accept or reject the Apex term sheet as currently written">
+        <div class="field-err" id="d-title-err">Please describe the decision before sending.</div>
+      </div>
+      <div class="field"><label>Context &amp; why CEO must decide</label><textarea id="d-context" placeholder="What's the situation and why does it need CEO sign-off specifically?"></textarea></div>
+      <div class="field"><label>Options with your view</label><textarea id="d-options" placeholder="Option A: ... (I recommend this because...)&#10;Option B: ..."></textarea></div>
+      <div class="field-2">
+        <div class="field"><label>Deadline</label><input type="date" id="d-date"></div>
+        <div class="field"><label>Consequence of delay</label><input type="text" id="d-risk" placeholder="e.g. Apex may withdraw offer"></div>
+      </div>
+      <div class="send-bar">
+        <button class="send-btn btn-decision" onclick="send('decision')">🟣 Submit for Decision</button>
+      </div>
+      <div class="send-hint">Submitted instantly — lands in the EA's email inbox. No extra steps needed.</div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="success-screen">
+    <span class="success-icon">✓</span>
+    <div class="success-title">Submitted.</div>
+    <div class="success-sub">Your <span id="success-type"></span> has been sent directly to the EA's inbox.<br>They'll review it before anything reaches Arya.</div>
+    <button class="success-again" onclick="resetForm()">Submit another</button>
+  </div>
+</div>
+
+<script>
+const FORMSPREE = 'https://formspree.io/f/xnjobyjz';
+
+const typeEmoji = { issue:'🔴', ask:'🟡', recommendation:'🟢', fyi:'🔵', blocker:'🟠', decision:'🟣' };
+const typeLabel = { issue:'ISSUE', ask:'ASK', recommendation:'RECOMMENDATION', fyi:'FYI', blocker:'BLOCKER', decision:'DECISION' };
+const titleIds  = { issue:'i-title', ask:'a-title', recommendation:'r-title', fyi:'f-title', blocker:'b-title', decision:'d-title' };
+
+// ── Type selector ──────────────────────────────────────────────
+function selectType(type){
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    const t=b.getAttribute('onclick').match(/'(\w+)'/)[1];
+    b.classList.remove('sel-'+t);
+  });
+  event.currentTarget.classList.add('sel-'+type);
+  document.querySelectorAll('.form-area').forEach(f=>f.classList.remove('show'));
+  const form=document.getElementById('form-'+type);
+  form.classList.add('show');
+  setTimeout(()=>form.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+// ── Collect all fields for a given type ───────────────────────
+function getData(type){
+  const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  const d={type, _subject: `[${typeLabel[type]}] from ${g(type[0]+'-name')||'Team'} — AppliedAI`};
+  if(type==='issue')          Object.assign(d,{name:g('i-name'),team:g('i-team'),title:g('i-title'),context:g('i-context'),tried:g('i-tried'),urgency:g('i-urgency'),need:g('i-need')});
+  else if(type==='ask')       Object.assign(d,{name:g('a-name'),team:g('a-team'),title:g('a-title'),why:g('a-why'),date:g('a-date'),cost:g('a-cost')});
+  else if(type==='recommendation') Object.assign(d,{name:g('r-name'),team:g('r-team'),title:g('r-title'),case_for:g('r-case'),alts:g('r-alts'),date:g('r-date'),aligned:g('r-aligned')});
+  else if(type==='fyi')       Object.assign(d,{name:g('f-name'),team:g('f-team'),title:g('f-title'),detail:g('f-detail')});
+  else if(type==='blocker')   Object.assign(d,{name:g('b-name'),team:g('b-team'),title:g('b-title'),why:g('b-why'),need:g('b-need'),date:g('b-date'),impact:g('b-impact')});
+  else if(type==='decision')  Object.assign(d,{name:g('d-name'),team:g('d-team'),title:g('d-title'),context:g('d-context'),options:g('d-options'),date:g('d-date'),risk:g('d-risk')});
+  return d;
+}
+
+// ── Validate required title field ─────────────────────────────
+function validate(type){
+  const tid=titleIds[type];
+  const el=document.getElementById(tid);
+  const err=document.getElementById(tid+'-err');
+  if(!el.value.trim()){
+    el.classList.add('err');
+    err.classList.add('show');
+    el.focus();
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    setTimeout(()=>{ el.classList.remove('err'); err.classList.remove('show'); },3500);
+    return false;
+  }
+  return true;
+}
+
+// ── Submit to Formspree ────────────────────────────────────────
+async function send(type){
+  if(!validate(type)) return;
+
+  const btn = document.querySelector(`#form-${type} .send-btn`);
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Sending…';
+
+  const data = getData(type);
+
+  try {
+    const res = await fetch(FORMSPREE, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      // Success
+      document.getElementById('main-form').style.display = 'none';
+      document.getElementById('success-screen').classList.add('show');
+      document.getElementById('success-type').textContent = typeLabel[type].toLowerCase();
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      alert('Something went wrong. Please check your Formspree endpoint and try again.');
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    alert('Could not connect. Are you online?');
+  }
+}
+
+// ── Reset ──────────────────────────────────────────────────────
+function resetForm(){
+  document.getElementById('main-form').style.display='block';
+  document.getElementById('success-screen').classList.remove('show');
+  document.querySelectorAll('.form-area').forEach(f=>f.classList.remove('show'));
+  document.querySelectorAll('input[type="text"],textarea').forEach(el=>el.value='');
+  document.querySelectorAll('input[type="date"]').forEach(el=>el.value='');
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    const t=b.getAttribute('onclick').match(/'(\w+)'/)[1];
+    b.classList.remove('sel-'+t);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

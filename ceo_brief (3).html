@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppliedAI — CEO Brief</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f6f2;--bg2:#efede7;--bg3:#ffffff;
+    --text:#1a1916;--text2:#6b6860;--text3:#a09e98;
+    --border:rgba(26,25,22,0.1);--border2:rgba(26,25,22,0.18);
+    --red:#c0392b;--red-light:#fdf0ef;--red-mid:#f5c5c1;--red-dark:#8b1a12;
+    --amber:#b45309;--amber-light:#fdf8ee;--amber-mid:#fcd89a;--amber-dark:#7c3a05;
+    --green:#166534;--green-light:#f0faf3;--green-mid:#a7d9b8;--green-dark:#0d4a25;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;min-height:100vh;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:56px;background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+  .nav-logo{font-family:'DM Serif Display',serif;font-size:18px;letter-spacing:-0.02em;}
+  .nav-logo span{color:var(--text3);font-style:italic;}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .nav-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:0.05em;}
+  .mode-btn{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;color:var(--text2);transition:all 0.15s;}
+  .mode-btn.active{background:var(--text);color:var(--bg3);border-color:var(--text);}
+
+  .page{padding:2rem;max-width:860px;margin:0 auto;}
+  .page-header{margin-bottom:2rem;}
+  .page-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+  .page-title{font-family:'DM Serif Display',serif;font-size:30px;letter-spacing:-0.03em;line-height:1.2;}
+  .page-title em{font-style:italic;color:var(--text2);}
+
+  /* SUMMARY BAR */
+  .summary-bar{display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;}
+  .summary-chip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid transparent;}
+  .chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .chip-red{background:var(--red-light);border-color:var(--red-mid);color:var(--red-dark);}
+  .chip-red .chip-dot{background:var(--red);}
+  .chip-amber{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber-dark);}
+  .chip-amber .chip-dot{background:var(--amber);}
+  .chip-green{background:var(--green-light);border-color:var(--green-mid);color:var(--green-dark);}
+  .chip-green .chip-dot{background:var(--green);}
+
+  /* SECTION */
+  .section-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:2rem;}
+  .section-row:first-of-type{margin-top:0;}
+  .section-label{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);white-space:nowrap;}
+  .section-rule{flex:1;height:1px;background:var(--border);}
+
+  /* CARDS */
+  .brief-card{border-radius:12px;overflow:hidden;border:1px solid transparent;margin-bottom:10px;transition:transform 0.12s,box-shadow 0.12s;position:relative;}
+  .brief-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+  .card-red{background:var(--red-light);border-color:var(--red-mid);}
+  .card-amber{background:var(--amber-light);border-color:var(--amber-mid);}
+  .card-green{background:var(--green-light);border-color:var(--green-mid);}
+
+  .brief-card-header{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;user-select:none;}
+  .tag{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;flex-shrink:0;color:white;}
+  .card-red .tag{background:var(--red);}
+  .card-amber .tag{background:var(--amber);}
+  .card-green .tag{background:var(--green);}
+  .card-title{font-size:14px;font-weight:500;flex:1;}
+  .card-red .card-title{color:var(--red-dark);}
+  .card-amber .card-title{color:var(--amber-dark);}
+  .card-green .card-title{color:var(--green-dark);}
+  .card-meta{font-family:'DM Mono',monospace;font-size:10px;opacity:0.6;flex-shrink:0;}
+  .card-red .card-meta{color:var(--red-dark);}
+  .card-amber .card-meta{color:var(--amber-dark);}
+  .card-green .card-meta{color:var(--green-dark);}
+  .chevron{font-size:10px;opacity:0.5;transition:transform 0.2s;flex-shrink:0;}
+  .brief-card.open .chevron{transform:rotate(180deg);}
+
+  .brief-card-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;font-size:13.5px;line-height:1.7;}
+  .brief-card.open .brief-card-body{max-height:600px;padding:0 16px 16px;}
+  .card-red .brief-card-body{color:var(--red-dark);}
+  .card-amber .brief-card-body{color:var(--amber-dark);}
+  .card-green .brief-card-body{color:var(--green-dark);}
+
+  .field-row{margin-bottom:10px;}
+  .field-label{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;opacity:0.55;margin-bottom:3px;}
+  .field-value{font-size:13.5px;line-height:1.65;}
+
+  .action-pill{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;margin-top:8px;font-weight:500;letter-spacing:0.04em;cursor:pointer;transition:opacity 0.15s;color:white;}
+  .card-red .action-pill{background:var(--red);}
+  .card-amber .action-pill{background:var(--amber);}
+  .card-green .action-pill{background:var(--green);}
+
+  /* ── EDIT MODE ── */
+  .edit-controls{display:none;position:absolute;top:8px;right:8px;gap:4px;z-index:10;}
+  body.edit-mode .edit-controls{display:flex;}
+  body.edit-mode .brief-card{cursor:default;}
+  body.edit-mode .brief-card:hover{transform:none;box-shadow:none;}
+
+  .edit-btn{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.06em;padding:3px 8px;border-radius:5px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;color:var(--text2);transition:all 0.12s;}
+  .edit-btn:hover{background:var(--bg2);}
+  .edit-btn.del{color:var(--red);border-color:var(--red-mid);}
+  .edit-btn.del:hover{background:var(--red-light);}
+
+  /* inline editing */
+  body.edit-mode [contenteditable]{outline:none;border-bottom:1.5px dashed var(--border2);padding-bottom:1px;cursor:text;min-width:20px;display:inline-block;}
+  body.edit-mode [contenteditable]:focus{border-bottom-color:var(--text2);}
+  body.edit-mode .brief-card-header{cursor:default;}
+
+  /* ADD CARD BTN */
+  .add-card-btn{display:none;width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--border2);background:none;font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);cursor:pointer;transition:all 0.15s;margin-bottom:10px;}
+  .add-card-btn:hover{background:var(--bg2);color:var(--text2);border-color:var(--border2);}
+  body.edit-mode .add-card-btn{display:block;}
+
+  /* ADD CARD MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(26,25,22,0.4);z-index:200;align-items:center;justify-content:center;}
+  .modal-bg.show{display:flex;animation:fadeIn 0.15s ease;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .modal{background:var(--bg3);border-radius:16px;padding:24px;width:90%;max-width:520px;animation:rise 0.2s ease;}
+  .modal h3{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:16px;}
+  .modal .field{margin-bottom:12px;}
+  .modal .field label{display:block;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:4px;}
+  .modal .field input,.modal .field textarea,.modal .field select{width:100%;padding:8px 11px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .modal .field input:focus,.modal .field textarea:focus{border-color:var(--text2);}
+  .modal .field textarea{min-height:70px;resize:vertical;}
+  .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .modal-actions{display:flex;gap:8px;margin-top:16px;}
+  .modal-btn{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border2);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+  .modal-btn.primary{background:var(--text);color:var(--bg3);border-color:var(--text);}
+  .modal-btn.primary:hover{opacity:0.85;}
+  .modal-btn.secondary{background:none;color:var(--text2);}
+  .modal-btn.secondary:hover{background:var(--bg2);}
+
+  /* EDIT SUMMARY */
+  body.edit-mode .chip-count{border-bottom:1.5px dashed var(--border2);cursor:text;outline:none;min-width:16px;}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg3);padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all 0.3s ease;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  .edit-hint{display:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-align:center;padding:8px;letter-spacing:0.04em;}
+  body.edit-mode .edit-hint{display:block;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Applied<span>AI</span> · <span style="font-size:14px">CEO Brief</span></div>
+  <div class="nav-right">
+    <div class="nav-date" id="nav-date"></div>
+    <button class="mode-btn" id="mode-toggle" onclick="toggleEditMode()">✏ Edit brief</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Daily · CEO</div>
+    <div class="page-title">Good morning, Arya.<br><em>Here's what needs you today.</em></div>
+  </div>
+
+  <div class="summary-bar">
+    <div class="summary-chip chip-red"><div class="chip-dot"></div><span class="chip-count" contenteditable="false" id="count-red">0</span>&nbsp;need action now</div>
+    <div class="summary-chip chip-amber"><div class="chip-dot"></div><span class="chip-count" contenteditable="false" id="count-amber">0</span>&nbsp;on your radar</div>
+    <div class="summary-chip chip-green"><div class="chip-dot"></div><span class="chip-count" contenteditable="false" id="count-green">0</span>&nbsp;moving well</div>
+  </div>
+
+  <div class="edit-hint">Click any text to edit it. Use the + buttons to add cards, × to remove them.</div>
+
+  <!-- RED SECTION -->
+  <div class="section-row"><div class="section-label">🔴 Act today</div><div class="section-rule"></div></div>
+  <div id="section-red"></div>
+  <button class="add-card-btn" onclick="openModal('red')">+ Add red card</button>
+
+  <!-- AMBER SECTION -->
+  <div class="section-row"><div class="section-label">🟡 On your radar</div><div class="section-rule"></div></div>
+  <div id="section-amber"></div>
+  <button class="add-card-btn" onclick="openModal('amber')">+ Add amber card</button>
+
+  <!-- GREEN SECTION -->
+  <div class="section-row"><div class="section-label">🟢 Moving well</div><div class="section-rule"></div></div>
+  <div id="section-green"></div>
+  <button class="add-card-btn" onclick="openModal('green')">+ Add green card</button>
+</div>
+
+<!-- ADD CARD MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Add card</h3>
+    <input type="hidden" id="modal-colour">
+    <div class="modal-row">
+      <div class="field"><label>Tag / type</label><input type="text" id="m-tag" placeholder="e.g. Decision, Issue, FYI"></div>
+      <div class="field"><label>From · team</label><input type="text" id="m-meta" placeholder="e.g. Marcus · Finance"></div>
+    </div>
+    <div class="field"><label>Title — one line</label><input type="text" id="m-title" placeholder="What's the headline?"></div>
+    <div class="field"><label>Context</label><textarea id="m-context" placeholder="What's happening / why does it matter?"></textarea></div>
+    <div class="field"><label>Recommendation</label><textarea id="m-rec" placeholder="What do you suggest? (optional)"></textarea></div>
+    <div class="field"><label>What Arya needs to do</label><input type="text" id="m-action" placeholder="e.g. Reply to Marcus by 2pm (optional)"></div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="addCard()">Add card</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let editMode = false;
+
+const labels = { red:'Decision', amber:'FYI', green:'Progress' };
+
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const btn = document.getElementById('mode-toggle');
+  btn.classList.toggle('active', editMode);
+  btn.textContent = editMode ? '✓ Done editing' : '✏ Edit brief';
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.setAttribute('contenteditable', editMode ? 'true' : 'false');
+  });
+  if (!editMode) { updateCounts(); showToast('Brief saved'); }
+}
+
+function updateCounts() {
+  ['red','amber','green'].forEach(c => {
+    const count = document.getElementById('section-' + c).querySelectorAll('.brief-card').length;
+    document.getElementById('count-' + c).textContent = count;
+  });
+}
+
+function toggleCard(el) {
+  if (editMode) return;
+  el.closest('.brief-card').classList.toggle('open');
+}
+
+function deleteCard(btn) {
+  if (!confirm('Remove this card?')) return;
+  btn.closest('.brief-card').remove();
+  updateCounts();
+}
+
+function openModal(colour) {
+  document.getElementById('modal-colour').value = colour;
+  document.getElementById('modal-title').textContent = 'Add ' + colour + ' card';
+  ['tag','meta','title','context','rec','action'].forEach(id => {
+    const el = document.getElementById('m-' + id);
+    el.value = '';
+  });
+  document.getElementById('m-tag').value = labels[colour] || '';
+  document.getElementById('modal-bg').classList.add('show');
+  setTimeout(() => document.getElementById('m-title').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+}
+
+document.getElementById('modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function addCard() {
+  const colour = document.getElementById('modal-colour').value;
+  const tag = document.getElementById('m-tag').value.trim() || 'Note';
+  const meta = document.getElementById('m-meta').value.trim();
+  const title = document.getElementById('m-title').value.trim();
+  const context = document.getElementById('m-context').value.trim();
+  const rec = document.getElementById('m-rec').value.trim();
+  const action = document.getElementById('m-action').value.trim();
+
+  if (!title) { document.getElementById('m-title').focus(); return; }
+
+  const card = document.createElement('div');
+  card.className = 'brief-card card-' + colour;
+  card.innerHTML = `
+    <div class="edit-controls">
+      <button class="edit-btn del" onclick="deleteCard(this)">× Remove</button>
+    </div>
+    <div class="brief-card-header" onclick="toggleCard(this)">
+      <span class="tag" contenteditable="false">${tag}</span>
+      <span class="card-title" contenteditable="false">${title}</span>
+      ${meta ? `<span class="card-meta" contenteditable="false">${meta}</span>` : ''}
+      <span class="chevron">▼</span>
+    </div>
+    <div class="brief-card-body">
+      ${context ? `<div class="field-row"><div class="field-label">Context</div><div class="field-value" contenteditable="false">${context}</div></div>` : ''}
+      ${rec ? `<div class="field-row"><div class="field-label">Recommendation</div><div class="field-value" contenteditable="false">${rec}</div></div>` : ''}
+      ${action ? `<div class="field-row"><div class="field-label">What you need to do</div><div class="field-value" contenteditable="false">${action}</div></div>` : ''}
+    </div>`;
+
+  document.getElementById('section-' + colour).appendChild(card);
+
+  // apply edit mode to new elements if still editing
+  if (editMode) {
+    card.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','true'));
+  }
+
+  closeModal();
+  updateCounts();
+  showToast('Card added to ' + colour + ' section');
+
+  // auto-open new card
+  card.classList.add('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function updateDate() {
+  const now = new Date();
+  document.getElementById('nav-date').textContent = now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long'}).toUpperCase();
+}
+
+updateDate();
+updateCounts();
+</script>
+</body>
+</html>
